@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulación Examen</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1d1d1f; --muted: #6b6b70;
+    --border: #e2e2e0; --accent: #2f5bd3; --ok: #1f8a4c; --bad: #c0392b; --ok2: #7a9a1f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151517; --card: #1f1f22; --text: #ececec; --muted: #9a9aa0;
+      --border: #333338; --accent: #7c9cff; --ok: #4cc47f; --bad: #ff7a6b; --ok2: #b7d45a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.15rem; margin: 0 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .stat { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+  .stat b { display: block; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--muted); font-size: .9rem; }
+  .formula { font-family: ui-monospace, Consolas, monospace; font-size: .95rem; margin: 12px 0 0; color: var(--muted); }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tabs button, .btn {
+    font: inherit; border: 1px solid var(--border); background: var(--card); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"], .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  input[type=number] {
+    font: inherit; width: 140px; padding: 7px 10px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .93rem; }
+  th, td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 600; }
+  tfoot td { font-weight: 600; }
+  .list {
+    max-height: 320px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;
+    font-family: ui-monospace, Consolas, monospace; font-size: .9rem; padding: 6px 12px; margin-bottom: 14px;
+  }
+  .list div { padding: 2px 0; }
+  .c0 { color: var(--ok); } .c1 { color: var(--ok2); } .c2 { color: var(--bad); }
+  .note { color: var(--muted); font-size: .92rem; }
+  svg text { fill: var(--muted); font-size: 11px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Caso 2: examen de selección múltiple</h1>
+  <p class="sub">Simulación de un estudiante que responde una pregunta con 5 opciones: sabe la respuesta o adivina.</p>
+
+  <section class="card">
+    <h2>Teoría</h2>
+    <div class="grid">
+      <div class="stat"><span>P(S): sabe la respuesta</span><b>0.75</b></div>
+      <div class="stat"><span>P(S'): adivina</span><b>0.25</b></div>
+      <div class="stat"><span>P(C | S)</span><b>1</b></div>
+      <div class="stat"><span>P(C | S') = 1/5</span><b>0.2</b></div>
+    </div>
+    <p class="formula">P(C) = P(C|S)·P(S) + P(C|S')·P(S') = (1)(0.75) + (0.2)(0.25) = <strong>0.8000</strong></p>
+    <p class="formula">Bayes: P(S|C) = P(C|S)·P(S) / P(C) = 0.75 / 0.8 = <strong>0.9375</strong></p>
+  </section>
+
+  <section class="card">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="manual">1. Modo manual</button>
+      <button role="tab" aria-selected="false" data-tab="auto">2. Modo automático</button>
+    </div>
+
+    <div id="tab-manual">
+      <div class="row">
+        <label for="n">¿Cuántos arreglos quieres observar? n =</label>
+        <input id="n" type="number" min="1" step="1" value="20">
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btn-all">Simular todos</button>
+        <button class="btn" id="btn-step">Mostrar de a uno</button>
+        <button class="btn" id="btn-next" hidden>Siguiente ▶</button>
+        <span class="note" id="progress"></span>
+      </div>
+      <div class="list" id="list" hidden></div>
+      <div id="manual-table"></div>
+    </div>
+
+    <div id="tab-auto" hidden>
+      <div class="row">
+        <button class="btn primary" id="btn-auto">Correr simulación (n = 10 hasta 1.000.000)</button>
+      </div>
+      <div id="auto-out"></div>
+    </div>
+  </section>
+
+  <p class="note">Versión web del programa en C# de <code>proyecto_programacion/main.cs</code>.</p>
+</main>
+
+<script>
+  const P_SABER = 0.75, OPCIONES = 5, CORRECTA = 1;
+  const P_ADIVINAR = 1 / OPCIONES;
+  const P_TEORICA = 1 * P_SABER + P_ADIVINAR * (1 - P_SABER);
+  const TAMANOS = [10, 100, 1000, 10000, 100000, 1000000];
+
+  // 0 = sabía ✔, 1 = adivinó ✔, 2 = adivinó ✘  (ramas del diagrama de árbol)
+  const DESCRIPCION = ["Sabía → ✔ correcta", "Adivinó → ✔ correcta", "Adivinó → ✘ incorrecta"];
+  const P_RESULTADO = [P_SABER, (1 - P_SABER) * P_ADIVINAR, (1 - P_SABER) * (1 - P_ADIVINAR)];
+
+  function simularPregunta() {
+    if (Math.random() <= P_SABER) return 0;
+    const escogida = 1 + Math.floor(Math.random() * OPCIONES);
+    return escogida === CORRECTA ? 1 : 2;
+  }
+
+  function simular(n) {
+    const r = new Uint8Array(n);
+    for (let i = 0; i < n; i++) r[i] = simularPregunta();
+    return r;
+  }
+
+  function contar(resultados) {
+    const c = [0, 0, 0];
+    for (const r of resultados) c[r]++;
+    return c;
+  }
+
+  const f4 = x => x.toFixed(4);
+  const miles = x => x.toLocaleString("es-CO");
+
+  function tablaConteo(c, n) {
+    const correctas = c[0] + c[1];
+    const filas = c.map((k, i) =>
+      `<tr><td class="c${i}">${DESCRIPCION[i]}</td><td>${miles(k)}</td><td>${f4(k / n)}</td><td>${f4(P_RESULTADO[i])}</td></tr>`
+    ).join("");
+    return `<div class="table-wrap"><table>
+      <thead><tr><th>Resultado</th><th>Conteo</th><th>Frec. relativa</th><th>P teórica</th></tr></thead>
+      <tbody>${filas}</tbody>
+      <tfoot>
+        <tr><td>Total correctas (C)</td><td>${miles(correctas)}</td><td>${f4(correctas / n)}</td><td>${f4(P_TEORICA)}</td></tr>
+        <tr><td>Total arreglos</td><td>${miles(n)}</td><td>1.0000</td><td>1.0000</td></tr>
+      </tfoot></table></div>`;
+  }
+
+  // ---------- Pestañas ----------
+  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+    document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
+    document.getElementById("tab-manual").hidden = b.dataset.tab !== "manual";
+    document.getElementById("tab-auto").hidden = b.dataset.tab !== "auto";
+  });
+
+  // ---------- Modo manual ----------
+  const $ = id => document.getElementById(id);
+  const MAX_LISTA = 5000;
+  let paso = null;
+
+  function leerN() {
+    const n = Math.floor(Number($("n").value));
+    if (!(n > 0)) { alert("Escribe un número entero mayor que 0."); return 0; }
+    return n;
+  }
+
+  function linea(i, r) {
+    return `<div class="c${r}">Arreglo ${String(i + 1).padStart(6, " ")}: ${DESCRIPCION[r]}</div>`;
+  }
+
+  $("btn-all").onclick = () => {
+    const n = leerN(); if (!n) return;
+    paso = null; $("btn-next").hidden = true; $("progress").textContent = "";
+    const res = simular(n);
+    const visibles = Math.min(n, MAX_LISTA);
+    let html = "";
+    for (let i = 0; i < visibles; i++) html += linea(i, res[i]);
+    if (n > MAX_LISTA) html += `<div class="note">… (se muestran los primeros ${miles(MAX_LISTA)})</div>`;
+    $("list").innerHTML = html; $("list").hidden = false;
+    $("manual-table").innerHTML = tablaConteo(contar(res), n);
+  };
+
+  $("btn-step").onclick = () => {
+    const n = leerN(); if (!n) return;
+    paso = { res: simular(n), i: 0, n };
+    $("list").innerHTML = ""; $("list").hidden = false;
+    $("manual-table").innerHTML = "";
+    $("btn-next").hidden = false; $("btn-next").disabled = false;
+    siguiente();
+  };
+
+  function siguiente() {
+    if (!paso) return;
+    const { res, n } = paso;
+    $("list").insertAdjacentHTML("beforeend", linea(paso.i, res[paso.i]));
+    $("list").scrollTop = $("list").scrollHeight;
+    paso.i++;
+    $("progress").textContent = `${paso.i} de ${n}`;
+    if (paso.i >= n) {
+      $("btn-next").disabled = true;
+      $("manual-table").innerHTML = tablaConteo(contar(res), n);
+      paso = null;
+    }
+  }
+  $("btn-next").onclick = siguiente;
+
+  // ---------- Modo automático ----------
+  $("btn-auto").onclick = () => {
+    const filas = [];
+    let ultimo;
+    for (const n of TAMANOS) {
+      const c = contar(simular(n));
+      const correctas = c[0] + c[1];
+      const f = correctas / n;
+      filas.push({ n, c, f, error: Math.abs(f - P_TEORICA), fSC: correctas ? c[0] / correctas : 0 });
+      ultimo = { c, n };
+    }
+
+    const cuerpo = filas.map(r => `<tr>
+      <td>${miles(r.n)}</td><td class="c0">${miles(r.c[0])}</td><td class="c1">${miles(r.c[1])}</td>
+      <td class="c2">${miles(r.c[2])}</td><td>${f4(r.f)}</td><td>0.80</td><td>${f4(r.error)}</td><td>${f4(r.fSC)}</td></tr>`).join("");
+
+    $("auto-out").innerHTML = `
+      <h2>Convergencia de la frecuencia relativa</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>n</th><th>Sabía ✔</th><th>Adiv. ✔</th><th>Adiv. ✘</th><th>f(C)</th><th>P(C)</th><th>Error</th><th>f(S|C)</th></tr></thead>
+        <tbody>${cuerpo}</tbody></table></div>
+      ${grafica(filas)}
+      <h2 style="margin-top:20px">Conteo detallado para n = ${miles(ultimo.n)}</h2>
+      ${tablaConteo(ultimo.c, ultimo.n)}
+      <p class="note">A medida que n crece, f(C) se acerca a P(C) = 0.8 y el error tiende a 0 (Ley de los grandes números).</p>`;
+  };
+
+  function grafica(filas) {
+    const W = 600, H = 220, L = 44, R = 16, T = 14, B = 30;
+    const ymin = 0.5, ymax = 1.0;
+    const x = i => L + i * (W - L - R) / (filas.length - 1);
+    const y = v => T + (ymax - Math.min(ymax, Math.max(ymin, v))) / (ymax - ymin) * (H - T - B);
+    const puntos = filas.map((r, i) => `${x(i)},${y(r.f)}`).join(" ");
+    const ejesY = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map(v =>
+      `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border)"/>
+       <text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(1)}</text>`).join("");
+    const ejesX = filas.map((r, i) => `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">10^${Math.log10(r.n)}</text>`).join("");
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;margin-top:16px" role="img" aria-label="f(C) contra n">
+      ${ejesY}${ejesX}
+      <line x1="${L}" x2="${W - R}" y1="${y(P_TEORICA)}" y2="${y(P_TEORICA)}" stroke="var(--bad)" stroke-dasharray="5 4"/>
+      <text x="${W - R}" y="${y(P_TEORICA) - 6}" text-anchor="end">P(C) = 0.8</text>
+      <polyline points="${puntos}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      ${filas.map((r, i) => `<circle cx="${x(i)}" cy="${y(r.f)}" r="4" fill="var(--accent)"/>`).join("")}
+    </svg>`;
+  }
+</script>
+</body>
+</html>
