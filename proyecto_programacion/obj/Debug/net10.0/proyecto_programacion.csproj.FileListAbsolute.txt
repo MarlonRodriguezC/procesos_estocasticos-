@@ -1,0 +1,15 @@
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/bin/Debug/net10.0/proyecto_programacion
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/bin/Debug/net10.0/proyecto_programacion.deps.json
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/bin/Debug/net10.0/proyecto_programacion.runtimeconfig.json
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/bin/Debug/net10.0/proyecto_programacion.dll
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/bin/Debug/net10.0/proyecto_programacion.pdb
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.GeneratedMSBuildEditorConfig.editorconfig
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.AssemblyInfoInputs.cache
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.AssemblyInfo.cs
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.csproj.CoreCompileInputs.cache
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.sourcelink.json
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.dll
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/refint/proyecto_programacion.dll
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.pdb
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/proyecto_programacion.genruntimeconfig.cache
+/Users/marlonrodriguez/Desktop/universidad/procesos estocsticos/proyecto_programacion/obj/Debug/net10.0/ref/proyecto_programacion.dll
